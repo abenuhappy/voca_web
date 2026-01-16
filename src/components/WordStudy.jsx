@@ -34,8 +34,14 @@ const WordStudy = () => {
 
     const playAudio = (e) => {
         e.stopPropagation();
-        // Placeholder for TTS or audio file
         const utterance = new SpeechSynthesisUtterance(currentWord.word);
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+    };
+
+    const playExampleAudio = (e) => {
+        e.stopPropagation();
+        const utterance = new SpeechSynthesisUtterance(currentWord.example);
         utterance.lang = 'en-US';
         window.speechSynthesis.speak(utterance);
     };
@@ -88,7 +94,12 @@ const WordStudy = () => {
                         </div>
 
                         <div className="example-section">
-                            <h4>Example</h4>
+                            <div className="section-header">
+                                <h4>Example</h4>
+                                <button className="btn-audio-small" onClick={playExampleAudio}>
+                                    <Volume2 size={16} />
+                                </button>
+                            </div>
                             <p className="example-text">"{currentWord.example}"</p>
                         </div>
                     </div>
