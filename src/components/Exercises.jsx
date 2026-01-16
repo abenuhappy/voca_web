@@ -5,7 +5,6 @@ import './Exercises.css';
 
 const Exercises = () => {
     const { currentUnit } = useApp();
-    const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isCorrect, setIsCorrect] = useState(null); // null, true, false
@@ -16,17 +15,24 @@ const Exercises = () => {
     }, [currentUnit]);
 
     const resetQuiz = () => {
-        setCurrentExerciseIndex(0);
         setCurrentQuestionIndex(0);
         setSelectedOption(null);
         setIsCorrect(null);
         setCompleted(false);
     };
 
-    if (!currentUnit || !currentUnit.exercises) return null;
+    if (!currentUnit || !currentUnit.exercises || currentUnit.exercises.length === 0) {
+        return (
+            <div className="quiz-container empty">
+                <div className="completed-card">
+                    <h2>No Exercises</h2>
+                    <p>There are no exercises available for this unit yet.</p>
+                </div>
+            </div>
+        );
+    }
 
-    const exerciseGroup = currentUnit.exercises[currentExerciseIndex];
-    const question = exerciseGroup.questions[currentQuestionIndex];
+    const question = currentUnit.exercises[currentQuestionIndex];
 
     const handleOptionClick = (option) => {
         if (selectedOption !== null) return; // Prevent changing answer
@@ -40,14 +46,9 @@ const Exercises = () => {
         setSelectedOption(null);
         setIsCorrect(null);
 
-        // Next question in group?
-        if (currentQuestionIndex < exerciseGroup.questions.length - 1) {
+        // Next question?
+        if (currentQuestionIndex < currentUnit.exercises.length - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
-        }
-        // Next exercise group?
-        else if (currentExerciseIndex < currentUnit.exercises.length - 1) {
-            setCurrentExerciseIndex(prev => prev + 1);
-            setCurrentQuestionIndex(0);
         }
         // Finished?
         else {
@@ -76,14 +77,13 @@ const Exercises = () => {
     return (
         <div className="quiz-container">
             <header className="quiz-header">
-                <span className="exercise-tag">{exerciseGroup.title}</span>
+                <span className="exercise-tag">Word Match</span>
                 <div className="progress-indicator">
-                    Question {currentQuestionIndex + 1} / {exerciseGroup.questions.length}
+                    Question {currentQuestionIndex + 1} / {currentUnit.exercises.length}
                 </div>
             </header>
 
             <div className="question-card">
-                <p className="instruction">{exerciseGroup.instruction}</p>
                 <h3 className="question-text">{question.question}</h3>
 
                 <div className="options-grid">
